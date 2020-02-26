@@ -1,5 +1,5 @@
 {
-  "name": "yadda",
+  "name": "yaddayadda",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -14,11 +14,15 @@
     "@progress/kendo-vue-grid": "^0.4.4",
     "@progress/kendo-vue-intl": "^0.4.4",
     "@progress/kendo-vue-popup": "^0.4.4",
+    "bootstrap": "4.4.1",
+    "bootstrap-vue": "2.5.0",
     "core-js": "^3.6.4",
-    "hamoni-sync": "^1.1.1",
+    "fabric": "4.0.0-beta.7",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
-    "vue-fabric-wrapper": "^0.3.69"
+    "vue-fabric-wrapper": "^0.3.69",
+    "vue-router": "3.1.5",
+    "vue-select": "3.4.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.2.0",
@@ -46,5 +50,7 @@
   "browserslist": [
     "> 1%",
     "last 2 versions"
-  ]
+  ],
+  "keywords": [],
+  "description": "YaddaYadda Testumgebung"
 }
