@@ -1,129 +1,212 @@
 <template>
-<layout name="LayoutDefault">  
-<b-container>
-  <b-row no-body style="margin-bottom:20px;">
-  <b-col>
-    <b-card no-body>
-    <fabric-canvas :width="800" :height="300" style="width:800px;">
+  <layout name="LayoutDefault">
+    <b-container>
+      <!-- fluid="xl" -->
+      <b-row no-body style="margin-bottom:20px;">
+        <b-col>
+          <b-card title="Toolbox" class="d-none d-sm-block">
+            <hr>
+            <!-- TODO: Dont show outside of tutorial mode.. -->
+            <!-- <b-alert show dismissible>< !--variant="danger"-- >
+              Click to add widgets...
+            </b-alert> -->
+            <b-row
+              v-for="el in ELEMENTS"
+              :key="el.typ"
+              class="mb-2"
+              style="width:260px; /*background-color:red;*/"
+            >
+              <b-col>
+                <b-img :id="'tool-'+el.typ" :src="el.url" @click="toolbox_add(el)" />
+                <!-- v-b-hover="(hover, evt) => { el._tool.hover = hover; this.console.log(el._tool); /* toolbox_hover(hover, el)*/ }"
+                :class="el._tool.hover ? 'border border-info' : 'border border-'" -->
+                  <!-- <b-popover :target="'tool-'+el.typ" triggers="hover" placement="top">
+                    <template v-slot:title>Click to add ...</template>< !-- I am popover <b>component</b> content! -- >
+                  </b-popover> -->
+                <!-- <b-tooltip :target="'tool-'+el.typ">Click to add ...</b-tooltip> -->
+                                  <!-- v-b-tooltip.hover="'Tooltip!'" -->
+                <!-- :style="el._tool.hover ? 'border:2px solid red;' : 'border:2px dashed #ccccccaa;'" -->
 
-      <!-- Separation between Toolbox and actual Canvas -->
-      <!-- TODO: width/height as params, y2 set as well -->
-      <fabric-line id="tb-border" :x1="250" :x2="250" :y1="0" :y2="1000"
-        fill="#ccc" stroke="#ccc" :strokeDashArray="[5,5]" />
+              </b-col>
+            </b-row>
+            <!-- <b-nav vertical class="w-25">
+            <b-nav-item active>Active Test</b-nav-item>
+            </b-nav>-->
+          </b-card>
+          <!-- <b-dropdown class="d-block d-sm-none" size="lg"  variant="link" toggle-class="text-decoration-none" no-caret>
+          <template v-slot:button-content>
+            < !--&#x1f50d;-- >
+            &#x1f528;
+            <span class="sr-only">Search</span>
+          </template>
+          <b-dropdown-item href="#">Action</b-dropdown-item>
+          <b-dropdown-item href="#">Another action</b-dropdown-item>
+          <b-dropdown-item href="#">Something else here...</b-dropdown-item>
+          </b-dropdown>-->
+        </b-col>
+        <b-col cols="8">
 
-      <!-- Einzelner Button vorerst mal statisch..  naa, doch ned... -- >
-      <fabric-image-from-URL
-        :id="item.a"
-        v-bind:key="item.a"
-        v-for="item in items"
-        url="/img/ui/textbox.png"
-        :left="item.l"
-        :top="item.t"
-        :hasRotatingPoint="false"
-        
-        @mouseup="dragTo"
-        @selected="selected"
-        @deselected="deselected"    
-
-      /> -->
-
-    <!-- ################################################################### -->
-    <!-- #  Individually generated Elements                                # -->
-    <!-- ################################################################### -->
-      <fabric-image-from-URL
-        :id="item.a"
-        v-bind:key="item.a"
-        v-for="item in items"
-        :url="item.url"
-        :left="item.l + LEFTOFFSET"
-        :top="item.t"
-        :hasRotatingPoint="false"
-        
-        @mouseup="modified"
-        @modified="modified"
-
-        @selected="onSelected"
-        @deselected="onDeselected"    
-
-      />
-    </fabric-canvas>
-    </b-card>
-
-  </b-col></b-row><b-row v-if="selEl"><b-col>
-
-  <!-- <b-card no-body id="propScreen" v-if="selEl" style="/*display:flex;* / margin-top:20px;*/"> -->
-    
-    <!-- ################################################################### -->
-    <!-- #  Events                                                         # -->
-    <!-- ################################################################### -->
-    <b-card class="events" title="Events">
-    <!-- <h3>Events</h3> -->
-
-      <!-- Select new event -->
-      <!-- TODO EV: Possibly use b-form-select(s) ... -->
-      <b-select v-model="selectedNewEvent"  size="sm" class="mt-3"><!-- @change="eventAdd" -->
-      <!-- <b-form-select v-model="selected" @change="this.console.log($event)"> -->
-        <option :value="-1" v-if="selectedNewEvent == -1">Add new event ...</option>
-        <option :value="-1" v-else>Cancel adding event!</option>
-        <option v-for="(event, key) in this.EVENTTYPES" :key="key" :value="key">{{event.desc}}</option>
-        <!-- <option>On Click</option>
-        <option>On Doubleclick</option> -->
-        <!-- <v-option v-for="item of monthoptions" :value="item" @click="gotoMonth(item)">{{item}}</v-option> -->
-      </b-select>
-      <!-- <div class="mt-3">Selected: <strong>{{ selected }}</strong></div> -->
-      
-      <!-- Select new action -->
-      <b-select v-if="selectedNewEvent != -1" v-model="selectedAction" @change="eventAdd" size="sm" class="mt-3">
-      <!-- <b-form-select v-model="selected" @change="this.console.log($event)"> -->
-        <option :value="-1">Select action ...</option>
-        <!-- <option :value="-1" v-else>Cancel adding action ...</option> -->
-        <option v-for="(action, key) in this.ACTIONTYPES" :key="key" :value="key">{{action.desc}}</option>
-        <!-- <option v-for="(event, key) in this.EVENTTYPES" :key="key" :value="key">{{event.desc}}</option> -->
-        <!-- <option>On Click</option>
-        <option>On Doubleclick</option> -->
-        <!-- <v-option v-for="item of monthoptions" :value="item" @click="gotoMonth(item)">{{item}}</v-option> -->
-      </b-select>
-    <!-- <v-select :options="['Wenn geklickt','Wenn doppelt geklickt']"></v-select> -->
-
-    <div :key="ev.a" v-for="ev in selEl.events" style="border:1px dotted #ccc; margin-top:20px">
-      <h4>On Click</h4>
-      <table>
-        <tr><td style="padding:20px;">
-          <div :key="con.a" v-for="con in ev.cond">
-            Darf nicht leer sein: {{con.el}}
+          <div style="mb-1">
+          <b-button-toolbar key-nav aria-label="Toolbar with button groups">
+            <b-button-group>
+              <!-- <b-button>&laquo;</b-button>
+              <b-button>&lsaquo;</b-button> -->
+              <b-button :pressed.sync="settings.grid" @click="this.console.log(settings.grid)" squared :variant="settings.grid ? 'primary' :'outline-secondary'">&#x25A6;</b-button>
+            </b-button-group>
+          </b-button-toolbar>
           </div>
-          <button type="button">+</button>
-        </td><td style="padding:20px;">
-          <span>Ereignis: {{ev.type}}</span>
-        </td></tr>
-      </table>
-    </div>
-    </b-card>
 
-  </b-col><b-col>
+          <b-card no-body>
+            <fabric-canvas ref="canvas" :height="400" :width="700">
+              <!-- :width="800" -->
+              <!-- Separation between Toolbox and actual Canvas -->
+              <!-- TODO: width/height as params, y2 set as well -->
+              
+              <!-- <fabric-dot-grid v-if="settings.grid" id="fc-grid" :gridSize="10" :gridHeight="400" :gridWidth="700" /> -->
+              <!-- <fabric-line id="fc-top" :x1="0" :x2="1000" :y1="0" :y2="0" stroke="#ccc" fill="#ccc" /> -->
+              <!-- <fabric-line
+              id="tb-border"
+              :x1="250"
+              :x2="250"
+              :y1="0"
+              :y2="1000"
+              fill="#ccc"
+              stroke="#ccc"
+              :strokeDashArray="[5,5]"
+              />-->
+              <!-- ################################################################### -->
+              <!-- #  Individually generated Elements                                # -->
+              <!-- ################################################################### -->
+              <fabric-image-from-URL
+                :id="/*'el-'+*/item.a"
+                :key="item.a"
+                v-for="item in items"
+                :url="item.url"
+                :left="item.l + LEFTOFFSET"
+                :top="item.t"
+                :hasRotatingPoint="false"
+                @modified="modified"
+                @selected="onSelected"
+                @deselected="onDeselected"
+                @moving="onDragging"
+                :select="selEl==item"
 
-    <!-- ################################################################### -->
-    <!-- Props -->
-    <!-- ################################################################### -->
-    <b-card title="Properties">
-
-      <!-- <h4>Properties</h4> -->
-      <!-- <table> < !-- in $UI(selEl.typ+'x').props -- >
+                @keyup.delete="this.console.log(item.a)"
+              />
+              <!-- @mouseup="modified" -->
+            </fabric-canvas>
+           </b-card>
+          <!-- Save functionality -->
+           <b-button @click="persist" :variant="itemsSaved ? 'success' : 'outline-success'" class="mt-3">
+             {{itemsSaved ? "Saved" : "Would you perhaps consider to save your changes anytime soon???"}}
+           </b-button>
+           <b-button @click="items=[]" variant="outline-danger" class="mt-3 ml-3">Reset</b-button>
+        </b-col>
+      </b-row>
+      <b-row v-if="selEl">
+        <b-col>
+          <!-- <b-card no-body id="propScreen" v-if="selEl" style="/*display:flex;* / margin-top:20px;*/"> -->
+          <!-- ################################################################### -->
+          <!-- #  Events                                                         # -->
+          <!-- ################################################################### -->
+          <b-card class="events" title="Events">
+            <!-- <h3>Events</h3> -->
+            <!-- Select new event -->
+            <!-- TODO EV: Possibly use b-form-select(s) ... -->
+            <b-select v-model="selectedNewEvent" size="sm" class="mt-3">
+              <!-- @change="eventAdd" -->
+              <!-- <b-form-select v-model="selected" @change="this.console.log($event)"> -->
+              <option :value="-1" v-if="selectedNewEvent == -1">Add new event ...</option>
+              <option :value="-1" v-else>Cancel adding event!</option>
+              <option v-for="(event, key) in this.EVENTTYPES" :key="key" :value="key">{{event.desc}}</option>
+              <!-- <option>On Click</option>
+              <option>On Doubleclick</option>-->
+              <!-- <v-option v-for="item of monthoptions" :value="item" @click="gotoMonth(item)">{{item}}</v-option> -->
+            </b-select>
+            <!-- <div class="mt-3">Selected: <strong>{{ selected }}</strong></div> -->
+            <!-- <div class="mt-3">Element Count: <strong>{{ items.length }}</strong></div> -->
+            <!-- Select new action -->
+            <b-select
+              v-if="selectedNewEvent != -1"
+              v-model="selectedAction"
+              @change="eventAdd"
+              size="sm"
+              class="mt-3"
+            >
+              <!-- <b-form-select v-model="selected" @change="this.console.log($event)"> -->
+              <option :value="-1">Select action ...</option>
+              <!-- <option :value="-1" v-else>Cancel adding action ...</option> -->
+              <option
+                v-for="(action, key) in this.ACTIONTYPES"
+                :key="key"
+                :value="key"
+              >{{action.desc}}</option>
+              <!-- <option v-for="(event, key) in this.EVENTTYPES" :key="key" :value="key">{{event.desc}}</option> -->
+              <!-- <option>On Click</option>
+              <option>On Doubleclick</option>-->
+              <!-- <v-option v-for="item of monthoptions" :value="item" @click="gotoMonth(item)">{{item}}</v-option> -->
+            </b-select>
+            <!-- <v-select :options="['Wenn geklickt','Wenn doppelt geklickt']"></v-select> -->
+            <div
+              :key="ev.a"
+              v-for="ev in selEl.events"
+              style="border:1px dotted #ccc; margin-top:20px"
+            >
+              <h4>On Click</h4>
+              <table>
+                <tr>
+                  <td style="padding:20px;">
+                    <div :key="con.a" v-for="con in ev.cond">Darf nicht leer sein: {{con.el}}</div>
+                    <button type="button">+</button>
+                  </td>
+                  <td style="padding:20px;">
+                    <span>Ereignis: {{ev.type}}</span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </b-card>
+        </b-col>
+        <b-col>
+          <!-- ################################################################### -->
+          <!-- Props -->
+          <!-- ################################################################### -->
+          <b-card title="Properties">
+            <!-- <h4>Properties</h4> -->
+            <!-- <table> < !-- in $UI(selEl.typ+'x').props -- >
       <tr v-for="(infos, propId) in $PROPS(selEl.typ)" :key="propId"> < !-- v-if="this.props.hasOwnProperty(propId)"-- >
         <td><label :for="propId">{{infos.text}}</label></td>
         <td><b-input v-if="infos.typ=='int'" :id="propId" v-model.number="selEl[propId]" number /></td>
         <td><input v-if="infos.typ=='str'" :id="propId" v-model="selEl[propId]"  /></td>
       </tr>
-      </table> -->
-
-      <div class="mt-4">
-      <b-form-group v-for="(infos, propId) in $PROPS(selEl.typ)" :key="propId" class="mt-0"
-        label-cols="4" label-cols-lg="2" label-size="sm" :label="infos.text" :label-for="propId">
-        <b-form-input v-if="infos.typ=='int'" :id="propId" size="sm" v-model="selEl[propId]" number />
-        <b-form-input v-if="infos.typ=='str'" :id="propId" size="sm" v-model="selEl[propId]" />
-      </b-form-group>
-      </div>
-      <!-- <td><label for="l">Links&nbsp; </label></td>
+            </table>-->
+            <div class="mt-4">
+              <b-form-group
+                v-for="(infos, propId) in $PROPS(selEl.typ)"
+                :key="propId"
+                class="mt-0"
+                label-cols="4"
+                label-cols-lg="2"
+                label-size="sm"
+                :label="infos.text"
+                :label-for="propId"
+              >
+                <b-form-input
+                  v-if="infos.typ=='int'"
+                  :id="propId"
+                  size="sm"
+                  v-model="selEl[propId]"
+                  number
+                />
+                <b-form-input
+                  v-if="infos.typ=='str'"
+                  :id="propId"
+                  size="sm"
+                  v-model="selEl[propId]"
+                />
+              </b-form-group>
+            </div>
+            <!-- <td><label for="l">Links&nbsp; </label></td>
         <td><input id="l" v-model.number="selEl.l" number /></td>
 
       <label for="t">Oben&nbsp; </label>
@@ -133,15 +216,32 @@
       <input id="w" v-model.number="selEl.w" number /><br />
 
       <label for="h">Höhe&nbsp; </label>
-      <input id="h" v-model.number="selEl.h" number /><br /> -->
+            <input id="h" v-model.number="selEl.h" number /><br />-->
+            <!-- TODO: Bei Eingabe von Höhe/Breite-Werten, Binding ggf anpassen (damit auch funzt) :-/ -->
+          </b-card>
+        </b-col>
+      </b-row>
 
-      <!-- TODO: Bei Eingabe von Höhe/Breite-Werten, Binding ggf anpassen (damit auch funzt) :-/ -->
-    </b-card>
-  </b-col>
-  </b-row>
-  
-</b-container> 
-</layout>
+      <b-row class="mt-4">
+        <b-col>
+          <b-card title="Output / App Description">
+            <b-textarea :readonly="true" :value="JSON.stringify(items) + '\n\nsettings:'+JSON.stringify(settings)+'\n\naktuelle-max-id:'+maxEl" :rows="7"></b-textarea>
+            
+            <!-- <b-row>
+            < !-- <b-col><b-checkbox :v-model="settings.autosave">Auto save</b-checkbox></b-col> -- >
+              <b-col> -->
+              <!-- <b-button @click="persist" :variant="itemsSaved ? 'success' : 'outline-success'" class="mt-3">
+                {{itemsSaved ? "Saved" : "Would you perhaps consider to save your changes anytime soon???"}}
+              </b-button>
+              
+                <b-button @click="items=[]" variant="outline-danger" class="mt-3 ml-3">Reset</b-button> -->
+              <!-- </b-col>
+            </b-row> -->
+          </b-card>
+        </b-col>
+      </b-row>
+    </b-container>
+  </layout>
 </template>
 
 <script>
@@ -149,7 +249,7 @@
 import vFW from "vue-fabric-wrapper";
 import Layout from "../layouts/Layout";
 import vSelect from "vue-select";
-//import Button from "../assets/Types";
+import BaseElement from "../assets/Types";
 
 //simport Vue from "vue";
 //import fabric from "fabric";
@@ -162,33 +262,54 @@ import vSelect from "vue-select";
 //Vue.component("kendo-dropdown-cell", DropDownCell);
 //Vue.component("kendo-command-cell", CommandCell);
 
-//const primitiveName = "kendo-grid";
-//var canvas;
+const DEFAULT_PROPS = {
+  l: 0,
+  t: 0,
+  w: 100,
+  h: 40,
+  /*v:true,*/ events: [],
+  //_tool: {hover:false,}
+};
+const ELEMENTS = [
+  {
+    typ: "but00",
+    url: "/img/ui/button.png",
+    ...DEFAULT_PROPS,
+    /*x:12,*/
+  },
+  {
+    typ: "num00",
+    url: "/img/ui/textbox.png",
+    ...DEFAULT_PROPS,
+    w: 200,
+  }
+];
 
-const EVENTTYPES = { // <- unterschiedlich je nach Elementtyp?
-  click:  {desc:"On Click",       },
-  double: {desc:"On Doubleclick", },
-  keyup:  {desc:"On Key Up", },
+const EVENTTYPES = {
+  // <- unterschiedlich je nach Elementtyp?
+  click: { desc: "On Click" },
+  double: { desc: "On Doubleclick" },
+  keyup: { desc: "On Key Up" }
 };
 
-const ACTIONTYPES = { // <- unterschiedlich je nach Elementtyp?
-  info: {desc:"Display a Message!"},
-  mail: {desc:"Send an Email!", req:"email_delivery" }, // requires smtp entries (or other means of delivery)
-  navi: {desc:"Navigate to another screen!", },
-  jump: {desc:"Jump through a hoop!", },
+const ACTIONTYPES = {
+  // <- unterschiedlich je nach Elementtyp?
+  info: { desc: "Display a Message!" },
+  mail: { desc: "Send an Email!", req: "email_delivery" }, // requires smtp entries (or other means of delivery)
+  navi: { desc: "Navigate to another screen!" },
+  jump: { desc: "Jump through a hoop!" }
 };
-
 
 export default {
   name: "app",
   //TYPES:TYPES,
-
   //c: canvas,
   components: {
     //EVENTTYPES,
     //Grid,
     //GridToolbar,
     //Button,
+    BaseElement,
     Layout,
     vSelect,
     FabricCanvas: vFW.FabricCanvas,
@@ -196,13 +317,14 @@ export default {
     FabricLine: vFW.FabricLine,
     //FabricCircle: vueFabricWrapper.FabricCircle,
     //FabricGroup: vueFabricWrapper.FabricGroup,
-    FabricImageFromURL: vFW.FabricImageFromURL,
+    FabricImageFromURL: vFW.FabricImageFromURL
   },
 
-  created () {
-    this.EVENTTYPES = EVENTTYPES // const does not need to be a reactive variable (data)
-    this.ACTIONTYPES = ACTIONTYPES
-    this.LEFTOFFSET = 250
+  created() {
+    this.EVENTTYPES = EVENTTYPES; // const does not need to be a reactive variable (data)
+    this.ACTIONTYPES = ACTIONTYPES;
+    this.ELEMENTS = ELEMENTS;
+    this.LEFTOFFSET = 0; //250;
   },
 
   props: [],
@@ -210,36 +332,56 @@ export default {
     return {
       items: [
         /* Diese Liste soll auch 1:1 als Form-Definition übergeben werden könnnen */
-        { a: "el-x", typ:"but00", l:20, t:150, w:100, h:40, url:"/img/ui/button.png", events:[{a:"ev-1", type:"Formular senden", cond:[{a:"c1",type:"notempty",el:"el-a"},{a:"c2",type:"notempty",el:"el-b"}]}] }, 
-        { a: "el-a", typ:"num00", l:20, t:20, w:250, h:40, url:"/img/ui/textbox.png", events:[] }, 
-        { a: "el-b", typ:"num00", l:20, t:80, w:250, h:40, url:"/img/ui/textbox.png", events:[] },
-        //new Button(),
-        ],
+        //new BaseElement(),
+        /* { a: "el-x", typ: "but00", l: 20, t: 150, w: 100, h: 40, url: "/img/ui/button.png",
+          events: [{ a: "ev-1", type: "Formular senden", cond: [
+                { a: "c1", type: "notempty", el: "el-a" },
+                { a: "c2", type: "notempty", el: "el-b" }
+              ] }] }, */
+      ],
+      itemsSaved: true,
+
       selEl: null,
+      maxEl: 0,
       //EVENTTYPES,
       // types: {
       //   but: {props: {l:["Left","int"],t:["Top","int"],w:["Width","int"],h:["Height","int"]},},
       //   num: {props: {l:["Left","int"],t:["Top","int"],w:["Width","int"],h:["Height","int"]},},
       // },
-      selectedNewEvent: -1,
+      selectedNewEvent: "click", // -1, // temporary / for testing purposes
       selectedAction: -1,
-
       onNewEreignis: null,
+      
+
+      settings: {
+        autosave: false,
+        grid: false,
+      },
     };
   },
-//   mounted: function() {
-//     const ref = this.$refs.can;
-//     const canvas = new fabric.Canvas(ref);
+  //   mounted: function() {
+  //     const ref = this.$refs.can;
+  //     const canvas = new fabric.Canvas(ref);
 
-//     const rect = new fabric.Rect({
-//       fill: 'red',
-//       width: 20,
-//       height: 20
-//     });
-//     canvas.add(rect);
-//  },
+  //     const rect = new fabric.Rect({
+  //       fill: 'red',
+  //       width: 20,
+  //       height: 20
+  //     });
+  //     canvas.add(rect);
+  //  },
 
-  mounted() { this.selEl = this.items[0]; }, // DEBUG: Button schon vorauswählen
+  mounted() {
+    this.selEl = this.items[0];
+
+    // ATM tools as well as settings are (only) persisted on "save" click
+    if (localStorage.settings) { this.settings = { ...this.settings, ...JSON.parse(localStorage.settings) } } // make sure "all"/new settings are present as well
+    if (localStorage.items)    { this.items = JSON.parse(localStorage.items) }
+
+    //this.maxEl = this.items.reduce((a,b) => { return (a.a < b.a) ? b.a : a.a; }) + 1; 
+    if (this.items.length > 0)
+      this.maxEl = Math.max.apply(Math, this.items.map(function(o) { return o.a; }))
+  },
 
   computed: {},
 
@@ -250,10 +392,55 @@ export default {
   //   }
   // },
 
-  methods: {
+  watch: {
+    items: { handler() { this.itemsSaved = false }, deep:true }
+  },
 
+  methods: {
     eventAdd(event) {
       console.log(event);
+    },
+
+    persist() {
+        localStorage.settings = JSON.stringify(this.settings);
+        localStorage.items    = JSON.stringify(this.items);
+        this.itemsSaved = true;
+    },
+
+    toolbox_add(element) {
+      //console.log(element);
+      var newel = { a:this.maxEl++, ...element };
+      //delete newel._tool;
+      //newel._tool = undefined; // only relevant for "parent" tools!
+
+      this.items.push(newel);
+      //this.selEl = newel;
+
+      //vFW.getCanvas();
+      //console.log(this.$refs.canvas);
+      //this.$refs.canvas.canvas.selectionKey = 'el-0';// geht so leider nicht...
+      
+    },
+    // toolbox_hover(hover, /*event,*/ el) {
+    //   console.log(el)
+    //   el.hovered = hover
+    // },
+    onSelected(event) {
+      console.log(event);
+      //if (this.selEl!==event.id) {
+      this.selEl = this.items.find(i => /*'el-'+*/i.a === event.id);
+      console.debug("Selected " + event.id);
+      //this.updateThaMightyPropScreen()
+      //}
+    },
+    onDeselected(event) {
+      //console.log(event);
+      //console.log(this.selEl);
+      if (this.selEl && this.selEl.a.valueOf() === event.id.valueOf()) {
+        this.selEl = null;
+        console.debug("Deselected " + event.id);
+        //this.updateThaMightyPropScreen()
+      }
     },
 
     modified(event) {
@@ -263,43 +450,53 @@ export default {
       //console.log(this.selEl)
       //console.log(this.items)
 
-      // Leider muss man hier wohl (nochmal) manuell festhalten wo hingezogen wurde
-      this.selEl.l = Math.round(event.target.left - this.LEFTOFFSET)
-      this.selEl.t = Math.round(event.target.top)
-      this.selEl.w = Math.round(event.target.width * event.target.scaleX)
-      this.selEl.h = Math.round(event.target.height * event.target.scaleY)
+      //// Leider muss man hier wohl (nochmal) manuell festhalten wo hingezogen wurde
+      // this.selEl.l = Math.round(event.target.left - this.LEFTOFFSET)
+      // this.selEl.t = event.target.top < 0 ? 0 : Math.round(event.target.top)
+      // this.selEl.w = Math.round(event.target.width * event.target.scaleX)
+      // this.selEl.h = Math.round(event.target.height * event.target.scaleY)
 
-      console.log(event.target)
-    },
-
-    onSelected(event) {
-      //console.log(event)
-      //if (this.selEl!==event.id) {
-        this.selEl = this.items.find(i => i.a === event.id);
-        console.debug("Selected "+event.id)
-        //this.updateThaMightyPropScreen()
-      //}
-    },
-    onDeselected(event) {
-      //console.log(event);
-      //console.log(this.selEl);
-      if (this.selEl && this.selEl.a.valueOf() === event.id.valueOf()) {
-        this.selEl = null
-        console.debug("Deselected "+event.id)
-        //this.updateThaMightyPropScreen()
+      // (TEST) Falls oben rausgeschoben -> Entfernen.
+      if (this.selEl.t + this.selEl.h <= 0) {
+        const index = this.items.indexOf(this.selEl);
+        if (index > -1) {
+          this.selEl = null;
+          this.items.splice(index, 1);
+          this.info("Ein Element entfernt.");
+        }
       }
+      //console.log(event.target)
     },
+
+    info(msg) {
+      console.log("INFO: " + msg);
+    },
+
+    onDragging(event) {
+      this.selEl.l = Math.round(event.target.left - this.LEFTOFFSET);
+      this.selEl.t = Math.round(event.target.top);
+      this.selEl.w = Math.round(event.target.width * event.target.scaleX);
+      this.selEl.h = Math.round(event.target.height * event.target.scaleY);
+    },
+
     // updateThaMightyPropScreen() {
 
     // },
 
     goBack() {
-      window.history.length > 1 ? this.$router.go(-1) : this.$router.push('/')
+      window.history.length > 1 ? this.$router.go(-1) : this.$router.push("/");
     }
   }
 };
 </script>
 
-<style>
-  /* .events { width:400px; } */
+<style scoped>
+/* input.btn.btn-default:hover, button.btn.btn-default:hover {
+    background-color: rgba(0,0,0,0.5);
+    border-color: rgba(0,0,0,0.5);
+    -webkit-transition: background-color 0.3s linear;
+    -moz-transition: background-color 0.3s linear;
+    -o-transition: background-color 0.3s linear;
+    transition: background-color 0.3s linear;
+} */
 </style>

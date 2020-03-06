@@ -10,7 +10,7 @@ export default new Router({
     {
       path: "/",
       name: "Dashboard",
-      component: Dashboard
+      component: CreateUI // Dashboard // temp UI also as starting page
     },
     {
       path: "/ui",
