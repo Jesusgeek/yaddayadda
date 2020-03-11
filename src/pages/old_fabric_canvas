@@ -1,0 +1,38 @@
+            <fabric-canvas ref="canvas" :height="400" :width="700">
+              <!-- :width="800" -->
+              <!-- Separation between Toolbox and actual Canvas -->
+              <!-- TODO: width/height as params, y2 set as well -->
+              
+              <!-- <fabric-dot-grid v-if="settings.grid" id="fc-grid" :gridSize="10" :gridHeight="400" :gridWidth="700" /> -->
+              <!-- <fabric-line id="fc-top" :x1="0" :x2="1000" :y1="0" :y2="0" stroke="#ccc" fill="#ccc" /> -->
+              <!-- <fabric-line
+              id="tb-border"
+              :x1="250"
+              :x2="250"
+              :y1="0"
+              :y2="1000"
+              fill="#ccc"
+              stroke="#ccc"
+              :strokeDashArray="[5,5]"
+              />-->
+              <!-- ################################################################### -->
+              <!-- #  Individually generated Elements                                # -->
+              <!-- ################################################################### -->
+              <fabric-image-from-URL
+                :id="/*'el-'+*/item.a"
+                :key="item.a"
+                v-for="item in items"
+                :url="item.url"
+                :left="item.l + LEFTOFFSET"
+                :top="item.t"
+                :hasRotatingPoint="false"
+                @modified="modified"
+                @selected="onSelected"
+                @deselected="onDeselected"
+                @moving="onDragging"
+                :select="selEl==item"
+
+                @keyup.delete="this.console.log(item.a)"
+              />
+              <!-- @mouseup="modified" -->
+            </fabric-canvas>

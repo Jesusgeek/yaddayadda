@@ -15,7 +15,7 @@ export default new Router({
     {
       path: "/ui",
       name: "UI Design",
-      component: CreateUI
+      component: Dashboard
     }
   ]
 });

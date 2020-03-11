@@ -56,49 +56,20 @@
           </b-button-toolbar>
           </div>
 
-          <b-card no-body>
-            <fabric-canvas ref="canvas" :height="400" :width="700">
-              <!-- :width="800" -->
-              <!-- Separation between Toolbox and actual Canvas -->
-              <!-- TODO: width/height as params, y2 set as well -->
-              
-              <!-- <fabric-dot-grid v-if="settings.grid" id="fc-grid" :gridSize="10" :gridHeight="400" :gridWidth="700" /> -->
-              <!-- <fabric-line id="fc-top" :x1="0" :x2="1000" :y1="0" :y2="0" stroke="#ccc" fill="#ccc" /> -->
-              <!-- <fabric-line
-              id="tb-border"
-              :x1="250"
-              :x2="250"
-              :y1="0"
-              :y2="1000"
-              fill="#ccc"
-              stroke="#ccc"
-              :strokeDashArray="[5,5]"
-              />-->
-              <!-- ################################################################### -->
-              <!-- #  Individually generated Elements                                # -->
-              <!-- ################################################################### -->
-              <fabric-image-from-URL
-                :id="/*'el-'+*/item.a"
-                :key="item.a"
-                v-for="item in items"
-                :url="item.url"
-                :left="item.l + LEFTOFFSET"
-                :top="item.t"
-                :hasRotatingPoint="false"
-                @modified="modified"
-                @selected="onSelected"
-                @deselected="onDeselected"
-                @moving="onDragging"
-                :select="selEl==item"
-
-                @keyup.delete="this.console.log(item.a)"
-              />
-              <!-- @mouseup="modified" -->
-            </fabric-canvas>
-           </b-card>
+          <!-- <b-card no-body>
+          </b-card> -->
+            
+          <!-- ###################################################################### CANVAS #### -->
+          <!-- ###################################################################### CANVAS #### -->
+          <!-- ###################################################################### CANVAS #### -->
+          <!-- ###################################################################### CANVAS #### -->
+          <!-- ###################################################################### CANVAS #### -->
+          <b-card no-body="">
+            <canvas id="can" width="400" height="400" />
+          </b-card>
           <!-- Save functionality -->
            <b-button @click="persist" :variant="itemsSaved ? 'success' : 'outline-success'" class="mt-3">
-             {{itemsSaved ? "Saved" : "Would you perhaps consider to save your changes anytime soon???"}}
+             {{itemsSaved ? "Saved" : "Save changes?"}}
            </b-button>
            <b-button @click="items=[]" variant="outline-danger" class="mt-3 ml-3">Reset</b-button>
         </b-col>
@@ -182,7 +153,7 @@
             </table>-->
             <div class="mt-4">
               <b-form-group
-                v-for="(infos, propId) in $PROPS(selEl.typ)"
+                v-for="(infos, propId) in TYPES[selEl.typ].props"
                 :key="propId"
                 class="mt-0"
                 label-cols="4"
@@ -246,13 +217,13 @@
 
 <script>
 //import HelloWorld from './components/HelloWorld.vue'
-import vFW from "vue-fabric-wrapper";
+//import vFW from "vue-fabric-wrapper";
 import Layout from "../layouts/Layout";
-import vSelect from "vue-select";
-import BaseElement from "../assets/Types";
+//import vSelect from "vue-select";
+//import BaseElement from "../assets/Types";
 
 //simport Vue from "vue";
-//import fabric from "fabric";
+import {fabric} from "fabric-browseronly";
 //import "@progress/kendo-theme-material/dist/all.css";
 //import { Grid, GridToolbar } from "@progress/kendo-vue-grid";
 //import Hamoni from "hamoni-sync";
@@ -261,6 +232,34 @@ import BaseElement from "../assets/Types";
 
 //Vue.component("kendo-dropdown-cell", DropDownCell);
 //Vue.component("kendo-command-cell", CommandCell);
+class Prop {
+  constructor(text, typ) {
+    //(this.text, this.typ) = (text, typ);
+    this.text = text;
+    this.typ = typ;
+  }
+} 
+const TYPES = {
+  but00: {
+    name: "Button",
+    props: {
+      l: new Prop("Left", "int"),
+      t: new Prop("Top", "int"),
+      w: new Prop("Width", "int"),
+      h: new Prop("Height", "int")
+    }
+  },
+  num00: {
+    name: "Numeric",
+    props: {
+      l: new Prop("Left", "int"),
+      t: new Prop("Top", "int"),
+      w: new Prop("Width", "int"),
+      h: new Prop("Height", "int")
+    }
+  }
+  //num00: {name:'Numeric',    props: {l:["Left","int"],t:["Top","int"],w:["Width","int"],h:["Height","int"]},},
+};
 
 const DEFAULT_PROPS = {
   l: 0,
@@ -309,15 +308,15 @@ export default {
     //Grid,
     //GridToolbar,
     //Button,
-    BaseElement,
+    //BaseElement,
     Layout,
-    vSelect,
-    FabricCanvas: vFW.FabricCanvas,
+    //vSelect,
+    //FabricCanvas: vFW.FabricCanvas,
     //FabricRectangle: vueFabricWrapper.FabricRectangle,
-    FabricLine: vFW.FabricLine,
+    //FabricLine: vFW.FabricLine,
     //FabricCircle: vueFabricWrapper.FabricCircle,
     //FabricGroup: vueFabricWrapper.FabricGroup,
-    FabricImageFromURL: vFW.FabricImageFromURL
+    //FabricImageFromURL: vFW.FabricImageFromURL
   },
 
   created() {
@@ -325,6 +324,8 @@ export default {
     this.ACTIONTYPES = ACTIONTYPES;
     this.ELEMENTS = ELEMENTS;
     this.LEFTOFFSET = 0; //250;
+
+    this.TYPES = TYPES;
   },
 
   props: [],
@@ -357,6 +358,8 @@ export default {
         autosave: false,
         grid: false,
       },
+
+      canvas: null,
     };
   },
   //   mounted: function() {
@@ -381,6 +384,25 @@ export default {
     //this.maxEl = this.items.reduce((a,b) => { return (a.a < b.a) ? b.a : a.a; }) + 1; 
     if (this.items.length > 0)
       this.maxEl = Math.max.apply(Math, this.items.map(function(o) { return o.a; }))
+
+
+    //const ref = this.$refs.can;
+    //this.canvas = new fabric.Canvas('can', { preserveObjectStacking: true, isDrawingMode:false });
+    this.canvas = new fabric.Canvas('can', { preserveObjectStacking: true });
+    //this.canvas =  fabric.createCanvasForNode(200,200);
+    //this.canvas = new fabric.StaticCanvas(null, { width: 200, height: 200 });
+
+    //const canvas = this.canvas;
+    const rect = new fabric.Rect({
+      fill: 'red',
+      width: 20,
+      height: 20,
+      top: 10,
+      left: 10,
+    });
+
+    this.canvas.add(rect);
+    //this.canvas.on('object:moving', this.preventDragOffCanvas)
   },
 
   computed: {},
@@ -421,6 +443,7 @@ export default {
       //this.$refs.canvas.canvas.selectionKey = 'el-0';// geht so leider nicht...
       
     },
+
     // toolbox_hover(hover, /*event,*/ el) {
     //   console.log(el)
     //   el.hovered = hover
@@ -443,7 +466,7 @@ export default {
       }
     },
 
-    modified(event) {
+    modified(/*event*/) {
       //e.dataTransfer.dropEffect = "copy";
       //console.log(eventData);
       //console.log(top:" + eventData.target.top + " left:" + eventData.target.left);

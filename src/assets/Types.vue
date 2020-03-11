@@ -6,48 +6,48 @@ class Prop {
     this.text = text;
     this.typ = typ;
   }
-}
+} 
 
-export class BaseElement {
-  static count = 0;
+// export class BaseElement {
+//   static count = 0;
 
-  _id = -1; // wird im 'constructor()' gesetzt
-  url = "/img/ui/button.png";
+//   _id = -1; // wird im 'constructor()' gesetzt
+//   url = "/img/ui/button.png";
 
-  t = 0; // Top
-  l = 0; // Left
-  w = 0; // Width
-  h = 0; // Height
+//   t = 0; // Top
+//   l = 0; // Left 
+//   w = 0; // Width
+//   h = 0; // Height
 
-  constructor() {
-    this._id = BaseElement.count++;
-  }
-  get id() {
-    return "el-" + this._id;
-  }
+//   constructor() {
+//     this._id = BaseElement.count++;
+//   }
+//   get id() {
+//     return "el-" + this._id;
+//   }
 
-  //TMP
-  get a() {
-    return "el-" + this._id;
-  }
-  events = [];
-  static typ = "but00";
-  // props = [
-  //   ['t', 0, 'int', 'Top'],
-  //   ['l', 0, 'int', 'Left'],
-  //   ['w', 0, 'int', 'Width'],
-  //   ['h', 0, 'int', 'Height'],
-  // ]
+//   //TMP
+//   get a() {
+//     return "el-" + this._id;
+//   }
+//   events = [];
+//   static typ = "but00";
+//   // props = [
+//   //   ['t', 0, 'int', 'Top'],
+//   //   ['l', 0, 'int', 'Left'],
+//   //   ['w', 0, 'int', 'Width'],
+//   //   ['h', 0, 'int', 'Height'],
+//   // ]
 
-  toJSON() {
-    return Object.getOwnPropertyNames(this).reduce((a, b) => {
-      a[b] = this[b];
-      return a;
-    }, {});
-    // return this.props.reduce((a, prop) => {
-    //   a[prop[0]] = prop[1]; return a; }, {}); // not tested
-  }
-}
+//   toJSON() {
+//     return Object.getOwnPropertyNames(this).reduce((a, b) => {
+//       a[b] = this[b];
+//       return a;
+//     }, {});
+//     // return this.props.reduce((a, prop) => {
+//     //   a[prop[0]] = prop[1]; return a; }, {}); // not tested
+//   }
+// }
 
 // export class Button extends BaseElement {
 //   url = "/img/ui/button.png"
