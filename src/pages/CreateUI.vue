@@ -1,80 +1,63 @@
 <template>
-  <layout name="LayoutDefault">
-    <b-container>
-      <!-- fluid="xl" -->
-      <b-row no-body style="margin-bottom:20px;">
-        <b-col>
-          <b-card title="Toolbox" class="d-none d-sm-block">
-            <hr>
-            <!-- TODO: Dont show outside of tutorial mode.. -->
-            <!-- <b-alert show dismissible>< !--variant="danger"-- >
-              Click to add widgets...
-            </b-alert> -->
-            <b-row
-              v-for="el in ELEMENTS"
-              :key="el.typ"
-              class="mb-2"
-              style="width:260px; /*background-color:red;*/"
-            >
-              <b-col>
-                <b-img :id="'tool-'+el.typ" :src="el.url" @click="toolbox_add(el)" />
-                <!-- v-b-hover="(hover, evt) => { el._tool.hover = hover; this.console.log(el._tool); /* toolbox_hover(hover, el)*/ }"
-                :class="el._tool.hover ? 'border border-info' : 'border border-'" -->
-                  <!-- <b-popover :target="'tool-'+el.typ" triggers="hover" placement="top">
-                    <template v-slot:title>Click to add ...</template>< !-- I am popover <b>component</b> content! -- >
-                  </b-popover> -->
-                <!-- <b-tooltip :target="'tool-'+el.typ">Click to add ...</b-tooltip> -->
-                                  <!-- v-b-tooltip.hover="'Tooltip!'" -->
-                <!-- :style="el._tool.hover ? 'border:2px solid red;' : 'border:2px dashed #ccccccaa;'" -->
+<layout name="LayoutDefault">
+<b-container>
+<b-row no-body>
 
-              </b-col>
-            </b-row>
-            <!-- <b-nav vertical class="w-25">
-            <b-nav-item active>Active Test</b-nav-item>
-            </b-nav>-->
-          </b-card>
-          <!-- <b-dropdown class="d-block d-sm-none" size="lg"  variant="link" toggle-class="text-decoration-none" no-caret>
-          <template v-slot:button-content>
-            < !--&#x1f50d;-- >
-            &#x1f528;
-            <span class="sr-only">Search</span>
-          </template>
-          <b-dropdown-item href="#">Action</b-dropdown-item>
-          <b-dropdown-item href="#">Another action</b-dropdown-item>
-          <b-dropdown-item href="#">Something else here...</b-dropdown-item>
-          </b-dropdown>-->
-        </b-col>
-        <b-col cols="8">
+  <b-col cols="3">
 
-          <div style="mb-1">
-          <b-button-toolbar key-nav aria-label="Toolbar with button groups">
-            <b-button-group>
-              <!-- <b-button>&laquo;</b-button>
-              <b-button>&lsaquo;</b-button> -->
-              <b-button :pressed.sync="settings.grid" @click="this.console.log(settings.grid)" squared :variant="settings.grid ? 'primary' :'outline-secondary'">&#x25A6;</b-button>
-            </b-button-group>
-          </b-button-toolbar>
-          </div>
+    <!-- TOOLBOX -->
+    <b-card title="Toolbox" class="d-none d-sm-block" style="/*width:300px*/"><hr>
+      <div v-for="el in ELEMENTS" :key="el.typ" class="d-flex mb-3 bd-highlight">
+        <b-img :id="'tool-'+el.typ" :src="el.url" @click="toolbox_add(el)" />
+          <!-- v-b-hover="(hover, evt) => { el._tool.hover = hover; this.console.log(el._tool); /* toolbox_hover(hover, el)*/ }"
+          :class="el._tool.hover ? 'border border-info' : 'border border-'" -->
+            <!-- <b-popover :target="'tool-'+el.typ" triggers="hover" placement="top">
+              <template v-slot:title>Click to add ...</template>< !-- I am popover <b>component</b> content! -- >
+            </b-popover> -->
+          <!-- v-b-tooltip.hover="'Tooltip!'" -->
+      </div>
+    </b-card>
 
-          <!-- <b-card no-body>
-          </b-card> -->
-            
-          <!-- ###################################################################### CANVAS #### -->
-          <!-- ###################################################################### CANVAS #### -->
-          <!-- ###################################################################### CANVAS #### -->
-          <!-- ###################################################################### CANVAS #### -->
-          <!-- ###################################################################### CANVAS #### -->
-          <b-card no-body="">
-            <canvas id="can" width="400" height="400" />
-          </b-card>
-          <!-- Save functionality -->
-           <b-button @click="persist" :variant="itemsSaved ? 'success' : 'outline-success'" class="mt-3">
-             {{itemsSaved ? "Saved" : "Save changes?"}}
-           </b-button>
-           <b-button @click="items=[]" variant="outline-danger" class="mt-3 ml-3">Reset</b-button>
-        </b-col>
-      </b-row>
-      <b-row v-if="selEl">
+    <!-- INFO: Considerations of a dropdown alternative for small viewports ...
+    <b-dropdown class="d-block d-sm-none" size="lg"  variant="link" toggle-class="text-decoration-none" no-caret>
+    <b-dropdown-item href="#">Action</b-dropdown-item>
+    <b-dropdown-item href="#">Another action</b-dropdown-item>
+    <b-dropdown-item href="#">Something else here...</b-dropdown-item>
+    </b-dropdown>-->
+
+  </b-col>
+  <b-col cols="9">
+
+    <!-- TOOLBAR -- >
+    <div class="mb-1">
+    <b-button-toolbar key-nav aria-label="Toolbar with button groups">
+      <b-button-group>< !-- <b-button>&lsaquo;&laquo;</b-button> -- >
+        <b-button :pressed.sync="settings.grid" @click="this.console.log(settings.grid)" squared :variant="settings.grid ? 'primary' :'outline-muted'">&#x25A6;</b-button>
+      </b-button-group>
+    </b-button-toolbar>
+    </div> -->
+
+    <!-- ###################################################################### CANVAS #### -->
+    <!-- ###################################################################### CANVAS #### -->
+    <!-- ###################################################################### CANVAS #### -->
+    <!-- ###################################################################### CANVAS #### -->
+    <!-- ###################################################################### CANVAS #### -->
+    <b-card no-body>
+      <div class="mx-auto d-block p-0 m-0">
+      <canvas id="can" :width="canX" :height="canY" style="background-color:#7799FF11" class="p-0 m-0" />
+      </div>
+    </b-card>
+
+    <!-- Save / Reset -->
+    <b-button @click="persist" :variant="itemsSaved ? 'success' : 'outline-success'" class="mt-3">
+      {{itemsSaved ? "Saved" : "Save changes?"}}
+    </b-button>
+    <b-button @click="items=[]" variant="outline-danger" class="mt-3 ml-3">Reset</b-button>
+
+  </b-col>
+
+</b-row>
+<b-row v-if="selEl">
         <b-col>
           <!-- <b-card no-body id="propScreen" v-if="selEl" style="/*display:flex;* / margin-top:20px;*/"> -->
           <!-- ################################################################### -->
@@ -216,22 +199,17 @@
 </template>
 
 <script>
-//import HelloWorld from './components/HelloWorld.vue'
-//import vFW from "vue-fabric-wrapper";
-import Layout from "../layouts/Layout";
-//import vSelect from "vue-select";
-//import BaseElement from "../assets/Types";
-
 //simport Vue from "vue";
-import {fabric} from "fabric-browseronly";
+import Layout from "../layouts/Layout";
+import { fabric } from "fabric-browseronly";
 //import "@progress/kendo-theme-material/dist/all.css";
 //import { Grid, GridToolbar } from "@progress/kendo-vue-grid";
 //import Hamoni from "hamoni-sync";
 //import DropDownCell from "./components/DropDownCell.vue";
 //import CommandCell from "./components/CommandCell.vue";
-
 //Vue.component("kendo-dropdown-cell", DropDownCell);
 //Vue.component("kendo-command-cell", CommandCell);
+
 class Prop {
   constructor(text, typ) {
     //(this.text, this.typ) = (text, typ);
@@ -258,7 +236,7 @@ const TYPES = {
       h: new Prop("Height", "int")
     }
   }
-  //num00: {name:'Numeric',    props: {l:["Left","int"],t:["Top","int"],w:["Width","int"],h:["Height","int"]},},
+  
 };
 
 const DEFAULT_PROPS = {
@@ -300,15 +278,8 @@ const ACTIONTYPES = {
 };
 
 export default {
-  name: "app",
-  //TYPES:TYPES,
-  //c: canvas,
+  //name: "app",
   components: {
-    //EVENTTYPES,
-    //Grid,
-    //GridToolbar,
-    //Button,
-    //BaseElement,
     Layout,
     //vSelect,
     //FabricCanvas: vFW.FabricCanvas,
@@ -320,15 +291,15 @@ export default {
   },
 
   created() {
-    this.EVENTTYPES = EVENTTYPES; // const does not need to be a reactive variable (data)
+    this.EVENTTYPES = EVENTTYPES;
     this.ACTIONTYPES = ACTIONTYPES;
     this.ELEMENTS = ELEMENTS;
     this.LEFTOFFSET = 0; //250;
-
     this.TYPES = TYPES;
   },
 
   props: [],
+
   data: function() {
     return {
       items: [
@@ -344,22 +315,19 @@ export default {
 
       selEl: null,
       maxEl: 0,
-      //EVENTTYPES,
-      // types: {
-      //   but: {props: {l:["Left","int"],t:["Top","int"],w:["Width","int"],h:["Height","int"]},},
-      //   num: {props: {l:["Left","int"],t:["Top","int"],w:["Width","int"],h:["Height","int"]},},
-      // },
+      
       selectedNewEvent: "click", // -1, // temporary / for testing purposes
       selectedAction: -1,
       onNewEreignis: null,
       
-
       settings: {
         autosave: false,
         grid: false,
       },
 
       canvas: null,
+      canX: 480,
+      canY: 320,
     };
   },
   //   mounted: function() {
