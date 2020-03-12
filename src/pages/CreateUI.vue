@@ -44,7 +44,9 @@
     <!-- ###################################################################### CANVAS #### -->
     <b-card no-body>
       <div class="mx-auto d-block p-0 m-0">
-      <canvas id="can" :width="canX" :height="canY" style="background-color:#7799FF11" class="p-0 m-0" />
+      <canvas id="can" :width="canX" :height="canY" style="background-color:#7799FF07" class="p-0 m-0">
+          <canvas-object :id="12345" />
+      </canvas>
       </div>
     </b-card>
 
@@ -202,6 +204,8 @@
 //simport Vue from "vue";
 import Layout from "../layouts/Layout";
 import { fabric } from "fabric-browseronly";
+import CanvasObject from "../components/CanvasObject"
+
 //import "@progress/kendo-theme-material/dist/all.css";
 //import { Grid, GridToolbar } from "@progress/kendo-vue-grid";
 //import Hamoni from "hamoni-sync";
@@ -281,6 +285,7 @@ export default {
   //name: "app",
   components: {
     Layout,
+    CanvasObject,
     //vSelect,
     //FabricCanvas: vFW.FabricCanvas,
     //FabricRectangle: vueFabricWrapper.FabricRectangle,
@@ -299,6 +304,10 @@ export default {
   },
 
   props: [],
+
+  provide() {
+    return { $canvas: () => this.canvas, } // provide (a getter of) the canvas instance, for canvas objects
+  },
 
   data: function() {
     return {
