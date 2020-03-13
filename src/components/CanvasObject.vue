@@ -5,7 +5,15 @@ export default {
     name: "canvas-object",
     // mixins: [....]
     props: {
-        
+        item: {
+          type: Object,
+          //default: function() { return {msg:'iwas}},
+          required: true,
+          // validator: function(val) {
+          //   //return  ['iwas','nochwas'].indexOf(val) !== -1
+          // TODO: Check, hat x,y,w,h etc.
+          // }
+        }
     },
 
     inject:  ["$canvas", ],
@@ -22,10 +30,10 @@ export default {
             //console.log("watch canvas val: "+newVal) } 
             
             //this.line = new fabric.Line([0,0,300,200], {fill:'red', stroke:'blue'})
-            var line = new fabric.Line([0,0,200,0], {fill:'red', stroke:'blue'})
+            //var line = new fabric.Line([0,0,200,0], {fill:'red', stroke:'blue'})
             var rect = new fabric.Rect({top:40, left:10, width:140, height:40, fill:'#cccccc22', stroke:'#ccccccaa'})
             /* ggf stattdessen zu gruppe hinzufügen */
-            this.canvas.add(line)
+            //this.canvas.add(line)
             this.canvas.add(rect)
 
         }}, immediate:true },
