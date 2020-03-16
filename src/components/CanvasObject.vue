@@ -1,26 +1,51 @@
 <script>
 import {fabric} from 'fabric-browseronly'
 
+const CANVAS_OBJECT_EVENTS = [
+  // "added",
+  // "removed",
+  "selected",
+  "deselected",
+  // "modified",
+  // "moved",
+  // "scaled",
+  // "rotated",
+  // "skewed",
+  // "rotating",
+  "scaling",
+  "moving",
+  // "skewing",
+  // "mousedown",
+  // "mouseup",
+  // "mouseover",
+  // "mouseout",
+  // "mousewheel",
+  // "mousedblclick",
+  // "dragover",
+  // "dragenter",
+  // "dragleave",
+  // "drop"
+];
+
 export default {
     name: "canvas-object",
     // mixins: [....]
+
     props: {
+        id: { type: Number, required: true },
         item: {
           type: Object,
-          //default: function() { return {msg:'iwas}},
           required: true,
           // validator: function(val) {
           //   //return  ['iwas','nochwas'].indexOf(val) !== -1
-          // TODO: Check, hat x,y,w,h etc.
           // }
         }
     },
+    data() { return { canvasItem: null, } },
 
     inject:  ["$canvas", ],
     computed: { canvas() { return this.$canvas() }, },
 
-    //console.log("render: "+h)
-    //console.log("slots default: "+this.$slots.default)
     // |RENDER| Falls Elemente verschachtelt übergeben werden, diese auch rendern; ansonsten keine Ausgabe
     render(h) { return this.$slots.default ? h("div", this.$slots.default) : undefined; }, 
 
@@ -31,12 +56,37 @@ export default {
             
             //this.line = new fabric.Line([0,0,300,200], {fill:'red', stroke:'blue'})
             //var line = new fabric.Line([0,0,200,0], {fill:'red', stroke:'blue'})
-            var rect = new fabric.Rect({top:40, left:10, width:140, height:40, fill:'#cccccc22', stroke:'#ccccccaa'})
+            this.canvasItem = new fabric.Rect({top:this.item.t, left:this.item.l, width:this.item.w, height:this.item.h, fill:'#cccccc22', stroke:'#ccccccaa'})
             /* ggf stattdessen zu gruppe hinzufügen */
             //this.canvas.add(line)
-            this.canvas.add(rect)
+            this.canvas.add(this.canvasItem)
+            this.registerEvents(true)
 
         }}, immediate:true },
+    },
+
+    methods: {
+      registerEvents(onoff) {
+        // canvasEvents.forEach(event => {
+        //   if (onoff)
+        //     this.canvas.on(event, e => this.$emit(event.split(":").join("-"), e))
+        //   else
+        //     this.canvas.off(event, this.$emit(event.split(":").join("-")))
+        //})
+        CANVAS_OBJECT_EVENTS.forEach(event => { 
+
+          if (onoff)
+            this.canvasItem.on(event, e => { this.$emit(event, { id: this.id, ...e })})
+
+          else if (this.canvasItem)
+            this.canvasItem.off(event)
+        })
+      }
+    },
+
+    beforeDestroy() { 
+      this.registerEvents(false)
+      this.canvas.remove(this.canvasItem) 
     },
 }
 

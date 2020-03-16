@@ -9,43 +9,20 @@
     <b-card title="Toolbox" class="d-none d-sm-block" style="/*width:300px*/"><hr>
       <div v-for="el in ELEMENTS" :key="el.typ" class="d-flex mb-3 bd-highlight">
         <b-img :id="'tool-'+el.typ" :src="el.url" @click="toolbox_add(el)" />
-          <!-- v-b-hover="(hover, evt) => { el._tool.hover = hover; this.console.log(el._tool); /* toolbox_hover(hover, el)*/ }"
-          :class="el._tool.hover ? 'border border-info' : 'border border-'" -->
-            <!-- <b-popover :target="'tool-'+el.typ" triggers="hover" placement="top">
-              <template v-slot:title>Click to add ...</template>< !-- I am popover <b>component</b> content! -- >
-            </b-popover> -->
-          <!-- v-b-tooltip.hover="'Tooltip!'" -->
       </div>
     </b-card>
-
-    <!-- INFO: Considerations of a dropdown alternative for small viewports ...
-    <b-dropdown class="d-block d-sm-none" size="lg"  variant="link" toggle-class="text-decoration-none" no-caret>
-    <b-dropdown-item href="#">Action</b-dropdown-item>
-    <b-dropdown-item href="#">Another action</b-dropdown-item>
-    <b-dropdown-item href="#">Something else here...</b-dropdown-item>
-    </b-dropdown>-->
 
   </b-col>
   <b-col cols="9">
 
-    <!-- TOOLBAR -- >
-    <div class="mb-1">
-    <b-button-toolbar key-nav aria-label="Toolbar with button groups">
-      <b-button-group>< !-- <b-button>&lsaquo;&laquo;</b-button> -- >
-        <b-button :pressed.sync="settings.grid" @click="this.console.log(settings.grid)" squared :variant="settings.grid ? 'primary' :'outline-muted'">&#x25A6;</b-button>
-      </b-button-group>
-    </b-button-toolbar>
-    </div> -->
-
-    <!-- ###################################################################### CANVAS #### -->
-    <!-- ###################################################################### CANVAS #### -->
     <!-- ###################################################################### CANVAS #### -->
     <!-- ###################################################################### CANVAS #### -->
     <!-- ###################################################################### CANVAS #### -->
     <b-card no-body>
       <div class="mx-auto d-block p-0 m-0">
       <canvas id="can" :width="canX" :height="canY" style="background-color:#7799FF07" class="p-0 m-0">
-          <canvas-object :id="12345" />
+        <canvas-object v-for="item in items" :key="item.a" :id="item.a" :item="item" 
+          @selected="onSelected" @moving="onDragging" @scaling="onDragging" />
       </canvas>
       </div>
     </b-card>
@@ -54,7 +31,7 @@
     <b-button @click="persist" :variant="itemsSaved ? 'success' : 'outline-success'" class="mt-3">
       {{itemsSaved ? "Saved" : "Save changes?"}}
     </b-button>
-    <b-button @click="items=[]" variant="outline-danger" class="mt-3 ml-3">Reset</b-button>
+    <b-button @click="items=[]" variant="danger" class="mt-3 ml-3">Reset</b-button>
 
   </b-col>
 
@@ -162,18 +139,6 @@
                 />
               </b-form-group>
             </div>
-            <!-- <td><label for="l">Links&nbsp; </label></td>
-        <td><input id="l" v-model.number="selEl.l" number /></td>
-
-      <label for="t">Oben&nbsp; </label>
-      <input id="t" v-model.number="selEl.t" number /><br />
-
-      <label for="w">Breite </label>
-      <input id="w" v-model.number="selEl.w" number /><br />
-
-      <label for="h">Höhe&nbsp; </label>
-            <input id="h" v-model.number="selEl.h" number /><br />-->
-            <!-- TODO: Bei Eingabe von Höhe/Breite-Werten, Binding ggf anpassen (damit auch funzt) :-/ -->
           </b-card>
         </b-col>
       </b-row>
@@ -181,8 +146,7 @@
       <b-row class="mt-4">
         <b-col>
           <b-card title="Output / App Description">
-            <b-textarea :readonly="true" :value="JSON.stringify(items) + '\n\nsettings:'+JSON.stringify(settings)+'\n\naktuelle-max-id:'+maxEl" :rows="7"></b-textarea>
-            
+            <b-textarea :readonly="true" :value="JSON.stringify(items) + '\n\nsettings:'+JSON.stringify(settings)+'\n\naktuelle-max-id:'+maxEl" :rows="7"></b-textarea>     
             <!-- <b-row>
             < !-- <b-col><b-checkbox :v-model="settings.autosave">Auto save</b-checkbox></b-col> -- >
               <b-col> -->
@@ -202,7 +166,7 @@
 
 <script>
 //simport Vue from "vue";
-import Layout from "../layouts/Layout";
+import Layout from "../layouts/Layout"; 
 import { fabric } from "fabric-browseronly";
 import CanvasObject from "../components/CanvasObject"
 
@@ -305,21 +269,10 @@ export default {
 
   props: [],
 
-  provide() {
-    return { $canvas: () => this.canvas, } // provide (a getter of) the canvas instance, for canvas objects
-  },
-
   data: function() {
     return {
-      items: [
-        /* Diese Liste soll auch 1:1 als Form-Definition übergeben werden könnnen */
-        //new BaseElement(),
-        /* { a: "el-x", typ: "but00", l: 20, t: 150, w: 100, h: 40, url: "/img/ui/button.png",
-          events: [{ a: "ev-1", type: "Formular senden", cond: [
-                { a: "c1", type: "notempty", el: "el-a" },
-                { a: "c2", type: "notempty", el: "el-b" }
-              ] }] }, */
-      ],
+      
+      items: [], /* Diese Liste soll auch 1:1 als Form-Definition übergeben werden könnnen */
       itemsSaved: true,
 
       selEl: null,
@@ -339,19 +292,9 @@ export default {
       canY: 320,
     };
   },
-  //   mounted: function() {
-  //     const ref = this.$refs.can;
-  //     const canvas = new fabric.Canvas(ref);
-
-  //     const rect = new fabric.Rect({
-  //       fill: 'red',
-  //       width: 20,
-  //       height: 20
-  //     });
-  //     canvas.add(rect);
-  //  },
 
   mounted() {
+
     this.selEl = this.items[0];
 
     // ATM tools as well as settings are (only) persisted on "save" click
@@ -370,17 +313,19 @@ export default {
     //this.canvas = new fabric.StaticCanvas(null, { width: 200, height: 200 });
 
     //const canvas = this.canvas;
-    const rect = new fabric.Rect({
-      fill: 'red',
-      width: 20,
-      height: 20,
-      top: 10,
-      left: 10,
-    });
-
-    this.canvas.add(rect);
-    //this.canvas.on('object:moving', this.preventDragOffCanvas)
+    // const rect = new fabric.Rect({
+    //   fill: 'red',
+    //   width: 20,
+    //   height: 20,
+    //   top: 10,
+    //   left: 10,
+    // });
+    // this.canvas.add(rect);
+    // //this.canvas.on('object:moving', this.preventDragOffCanvas)
   },
+
+  // Provide (a getter of) the canvas instance, for canvas objects
+  provide() { return { $canvas: () => this.canvas, } },
 
   computed: {},
 
@@ -408,7 +353,7 @@ export default {
 
     toolbox_add(element) {
       //console.log(element);
-      var newel = { a:this.maxEl++, ...element };
+      var newel = { a:(++this.maxEl), ...element };
       //delete newel._tool;
       //newel._tool = undefined; // only relevant for "parent" tools!
 
@@ -425,13 +370,9 @@ export default {
     //   console.log(el)
     //   el.hovered = hover
     // },
-    onSelected(event) {
-      console.log(event);
-      //if (this.selEl!==event.id) {
-      this.selEl = this.items.find(i => /*'el-'+*/i.a === event.id);
-      console.debug("Selected " + event.id);
+    onSelected(event) { this.selEl = this.items.find(i => i.a === event.id);
+      //console.debug("Selected " + event.id);
       //this.updateThaMightyPropScreen()
-      //}
     },
     onDeselected(event) {
       //console.log(event);
@@ -473,7 +414,8 @@ export default {
     },
 
     onDragging(event) {
-      this.selEl.l = Math.round(event.target.left - this.LEFTOFFSET);
+      console.log(event.target)
+      this.selEl.l = Math.round(event.target.left);
       this.selEl.t = Math.round(event.target.top);
       this.selEl.w = Math.round(event.target.width * event.target.scaleX);
       this.selEl.h = Math.round(event.target.height * event.target.scaleY);
