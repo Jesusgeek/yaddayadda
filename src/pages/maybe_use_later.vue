@@ -146,5 +146,14 @@ export default {
       ]
     }
   }
+
+  // Canvas Events
+        // canvasEvents.forEach(event => {
+        //   if (onoff)
+        //     this.canvas.on(event, e => this.$emit(event.split(":").join("-"), e))
+        //   else
+        //     this.canvas.off(event, this.$emit(event.split(":").join("-")))
+        //})
+
 }
 </script>
